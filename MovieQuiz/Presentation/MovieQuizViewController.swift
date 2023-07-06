@@ -10,39 +10,23 @@ final class MovieQuizViewController: UIViewController {
     private var currentQuestionIndex: Int = 0
     private var correctAnswers: Int = 0
     private let questions: [QuizQuestion] = [
-        QuizQuestion(image: "The Godfather", text: "Рейтинг этого фильма больше чем 6?", correctAnswer: true),
-        QuizQuestion(image: "The Dark Knight", text: "Рейтинг этого фильма больше чем 6?", correctAnswer: true),
-        QuizQuestion(image: "Kill Bill", text: "Рейтинг этого фильма больше чем 6?", correctAnswer: true),
-        QuizQuestion(image: "The Avengers", text: "Рейтинг этого фильма больше чем 6?", correctAnswer: true),
-        QuizQuestion(image: "Deadpool", text: "Рейтинг этого фильма больше чем 6?", correctAnswer: true),
-        QuizQuestion(image: "The Green Knight", text: "Рейтинг этого фильма больше чем 6?", correctAnswer: true),
-        QuizQuestion(image: "Old", text: "Рейтинг этого фильма больше чем 6?", correctAnswer: false),
-        QuizQuestion(image: "The Ice Age Adventures of Buck Wild", text: "Рейтинг этого фильма больше чем 6?", correctAnswer: false),
-        QuizQuestion(image: "Tesla", text: "Рейтинг этого фильма больше чем 6?", correctAnswer: false),
-        QuizQuestion(image: "Vivarium", text: "Рейтинг этого фильма больше чем 6?", correctAnswer: false)
+        QuizQuestion(image: "The Godfather", correctAnswer: true),
+        QuizQuestion(image: "The Dark Knight", correctAnswer: true),
+        QuizQuestion(image: "Kill Bill", correctAnswer: true),
+        QuizQuestion(image: "The Avengers", correctAnswer: true),
+        QuizQuestion(image: "Deadpool", correctAnswer: true),
+        QuizQuestion(image: "The Green Knight", correctAnswer: true),
+        QuizQuestion(image: "Old", correctAnswer: false),
+        QuizQuestion(image: "The Ice Age Adventures of Buck Wild", correctAnswer: false),
+        QuizQuestion(image: "Tesla", correctAnswer: false),
+        QuizQuestion(image: "Vivarium", correctAnswer: false)
     ]
     // MARK: - Lifecycle
     override func viewDidLoad() {
         super.viewDidLoad()
         showNextQuestion()
     }
-    
-    struct QuizQuestion{
-        let image: String
-        let text: String
-        let correctAnswer: Bool
-    }
-    struct QuizStepViewModel {
-        let image: UIImage
-        let question: String
-        let questionNumber: String
-    }
-    struct QuizResultsViewModel {
-        let title: String
-        let text: String
-        let buttonText: String
-    }
-    
+   
     private func convert(model: QuizQuestion) -> QuizStepViewModel {
         let questionStep = QuizStepViewModel(image: UIImage(named: model.image) ?? UIImage(), question: model.text, questionNumber: "\(currentQuestionIndex + 1) /\(questions.count)")
         return questionStep
@@ -79,8 +63,7 @@ final class MovieQuizViewController: UIViewController {
             currentQuestionIndex += 1
             showNextQuestion()
         }
-        noButtonClicked.isEnabled = true
-        yesButtonClicked.isEnabled = true
+        buttonLock(isLock: false)
     }
     private func showAlert(quiz result: QuizResultsViewModel) {
         let alert = UIAlertController(title: result.title, message: result.text, preferredStyle: .alert)
@@ -97,20 +80,27 @@ final class MovieQuizViewController: UIViewController {
     private func hideAnswerResult(){
         imageView.layer.borderWidth = 0
     }
+    private func buttonLock(isLock: Bool){
+        if isLock == true {
+            noButtonClicked.isEnabled = false
+            yesButtonClicked.isEnabled = false
+        }else{
+            noButtonClicked.isEnabled = true
+            yesButtonClicked.isEnabled = true
+        }
+    }
 
-        @IBAction private func yesButtonClicked(_ sender: UIButton) {
-            let currentQuestion = questions[currentQuestionIndex]
-            let userAnswer = true
-            showAnswerResult(isCorrect: userAnswer == currentQuestion.correctAnswer)
-            noButtonClicked.isEnabled = false
-            yesButtonClicked.isEnabled = false
-        }
-        
-        @IBAction private func noButtonClicked(_ sender: UIButton) {
-            let currentQuestion = questions[currentQuestionIndex]
-            let userAnswer = false
-            showAnswerResult(isCorrect: userAnswer == currentQuestion.correctAnswer)
-            noButtonClicked.isEnabled = false
-            yesButtonClicked.isEnabled = false
-        }
+    @IBAction private func yesButtonClicked(_ sender: UIButton) {
+        let currentQuestion = questions[currentQuestionIndex]
+        let userAnswer = true
+        showAnswerResult(isCorrect: userAnswer == currentQuestion.correctAnswer)
+        buttonLock(isLock: true)
+    }
+    
+    @IBAction private func noButtonClicked(_ sender: UIButton) {
+        let currentQuestion = questions[currentQuestionIndex]
+        let userAnswer = false
+        showAnswerResult(isCorrect: userAnswer == currentQuestion.correctAnswer)
+        buttonLock(isLock: true)
+    }
 }
